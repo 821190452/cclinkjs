@@ -115,4 +115,4 @@ typings/
 .dynamodb/
 
 # my config
-# dist/
+dist/

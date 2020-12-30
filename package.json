@@ -1,7 +1,7 @@
 {
   "name": "cclinkjs",
   "version": "1.0.0",
-  "description": "cclink.js decode remake",
+  "description": "cclink.js remake",
   "main": "src/index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon --exec 'npx babel-node' src/index.js --watch src",

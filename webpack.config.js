@@ -1,8 +1,21 @@
 const path = require('path')
+const packagejson = require('./package.json')
+
 module.exports = {
-  entry: './src/index.js' /*需要打包的入口文件*/,
+  entry: './src/index.js',
+  mode: 'development',
+  target: 'node',
   output: {
-    filename: 'bundle.js' /*打包输出文件的名称*/,
-    path: path.resolve(__dirname, 'dist') /*打包输出文件的目录*/,
+    filename: `cclink-${packagejson.version}.js`,
+    path: path.resolve(__dirname, 'dist'),
+  },
+  node: {
+    console: true,
+    global: true,
+    process: true,
+    Buffer: true,
+    __filename: true,
+    __dirname: true,
+    setImmediate: true,
   },
 }
