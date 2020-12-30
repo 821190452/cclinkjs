@@ -1,5 +1,5 @@
-const _WebSocket = require('websocket')
-const CCLinkDataProcessing = require('./CCLinkDataProcessing')
+import WebSocket from 'websocket'
+import CCLinkDataProcessing from './CCLinkDataProcessing'
 
 /**
  * CCLinkJS - Remake from cclink.js
@@ -12,10 +12,10 @@ class CCLinkJS {
       useWss: true,
     }
     this.WebSocket = {
-      client: new _WebSocket.client(),
-      server: new _WebSocket.server(),
+      client: new WebSocket.client(),
+      server: new WebSocket.server(),
       /**
-       * @type {_WebSocket.connection} WebSocket会话
+       * @type {WebSocket.connection} WebSocket会话
        */
       socketConnection: null,
     }
@@ -49,7 +49,7 @@ class CCLinkJS {
 
   /**
    * 连接成功处理方法
-   * @param {_WebSocket.connection} connection
+   * @param {WebSocket.connection} connection
    */
   _onConnect(connection) {
     this.WebSocket.socketConnection = connection
@@ -75,7 +75,7 @@ class CCLinkJS {
 
   /**
    * 消息处理方法
-   * @param {_WebSocket.IMessage} data
+   * @param {WebSocket.IMessage} data
    */
   _onMessage(data) {
     let Uint8ArrayData = new Uint8Array(data.binaryData),

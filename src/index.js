@@ -1,8 +1,7 @@
-const _CCLinkJS = require('./lib/CCLinkJS')
-const _CCLinkDataProcessing = require('./lib/CCLinkDataProcessing')
+import CCLinkJS from './lib/CCLinkJS'
+import CCLinkDataProcessing from './lib/CCLinkDataProcessing'
 
-const CCLinkJS = new _CCLinkJS()
+const cclinkjs = new CCLinkJS()
 
-CCLinkJS.connect()
-
-CCLinkJS._startHeartBeat()
+cclinkjs.connect()
+cclinkjs._startHeartBeat()

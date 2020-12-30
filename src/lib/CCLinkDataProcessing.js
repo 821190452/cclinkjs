@@ -1,8 +1,8 @@
-const msgpack = require('msgpack5')()
-const pako = require('pako')
+import msgpack from 'msgpack5'
+import pako from 'pako'
 
 /**
- * CCLink.js 数据处理类
+ * cclink.js 数据处理类
  * @author hhui64<907322015@qq.com>
  */
 class CCLinkDataProcessing {
@@ -39,7 +39,7 @@ class CCLinkDataProcessing {
    * cclink.js:2082 dumps()
    */
   dumps() {
-    let msgPackEncodeBuffer = new Uint8Array(msgpack.encode(this.msgWithOutSidCid)),
+    let msgPackEncodeBuffer = new Uint8Array(msgpack().encode(this.msgWithOutSidCid)),
       msgPackEncodeBufferUint8Array = new Uint8Array(8 + msgPackEncodeBuffer.byteLength),
       msgPackEncodeBufferUint8ArrayDataView = new DataView(msgPackEncodeBufferUint8Array.buffer)
     msgPackEncodeBufferUint8ArrayDataView.setUint16(0, this.ccsid, true)
@@ -60,7 +60,7 @@ class CCLinkDataProcessing {
       ccsid = n.getUint16(0, true),
       cccid = n.getUint16(2, true),
       o = null
-    if (!0 & n.getUint32(4, true)) {
+    if (n.getUint32(4, true)) {
       let s = n.getUint32(8, true),
         u = new Uint8Array(Uint8ArrayData.buffer, 12)
       u.byteLength === s && (o = pako.inflate(u))
@@ -68,7 +68,7 @@ class CCLinkDataProcessing {
       o = new Uint8Array(Uint8ArrayData.buffer, 8)
     }
 
-    let f = msgpack.decode(o)
+    let f = msgpack().decode(o)
 
     return new CCLinkDataProcessing(
       Object.assign(
