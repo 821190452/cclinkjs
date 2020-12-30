@@ -1,0 +1,35 @@
+{
+  "name": "cclinkjs",
+  "version": "1.0.0",
+  "description": "cclink.js decode remake",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development nodemon --exec 'npx babel-node' src/index.js --watch src",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "babel": "npx babel src -d dist",
+    "build": "webpack",
+    "start": "cross-env NODE_ENV=production node dist/index.js"
+  },
+  "author": "hhui64",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:hhui64/cclinkjs.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/node": "^7.12.10",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.12.11",
+    "axios": "^0.21.1",
+    "cross-env": "^7.0.3",
+    "crypto-js": "^4.0.0",
+    "eslint": "^7.16.0",
+    "moment": "^2.29.1",
+    "msgpack5": "^4.4.0",
+    "nodemon": "^2.0.6",
+    "pako": "^2.0.2",
+    "websocket": "^1.0.33"
+  }
+}
