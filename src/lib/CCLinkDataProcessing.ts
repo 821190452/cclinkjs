@@ -2,27 +2,22 @@ import msgpack from 'msgpack5'
 import pako from 'pako'
 
 interface CCJsonData {
-  ccsid: number
-  cccid: number
-}
-
-interface CCJsonDataMsgWithOutSidCid {
   ccsid?: number
   cccid?: number
+  // [key: string | number]: any
 }
-
 
 /**
  * cclink.js 数据处理类
  * @author hhui64<907322015@qq.com>
  */
-export class CCLinkDataProcessing {
+class CCLinkDataProcessing {
   ccsid: number
   cccid: number
-  msgWithOutSidCid: CCJsonDataMsgWithOutSidCid
+  msgWithOutSidCid: CCJsonData
   constructor(data: CCJsonData) {
-    this.ccsid = data.ccsid
-    this.cccid = data.cccid
+    this.ccsid = data.ccsid || 0
+    this.cccid = data.cccid || 0
     this.msgWithOutSidCid = data
     delete this.msgWithOutSidCid.ccsid
     delete this.msgWithOutSidCid.cccid
@@ -31,21 +26,34 @@ export class CCLinkDataProcessing {
   /**
    * 格式化JSON数据
    * cclink.js:2074 format(t)
-   * @param {String} t 数据类型: json/string
+   * @param {string} type 格式化类型
    */
-  format(t: object | string) {
-    return 'json' == t
-      ? Object.assign(
-          {},
-          {
-            ccsid: this.ccsid,
-            cccid: this.cccid,
-          },
-          this.msgWithOutSidCid
-        )
-      : 'string' == t
-      ? JSON.stringify(this)
-      : this
+  format(type: string): CCJsonData {
+    if (type === 'json') {
+      return Object.assign(
+        {},
+        {
+          ccsid: this.ccsid,
+          cccid: this.cccid,
+        },
+        this.msgWithOutSidCid
+      )
+    }
+
+    // return 'json' == t
+    //   ? Object.assign(
+    //       {},
+    //       {
+    //         ccsid: this.ccsid,
+    //         cccid: this.cccid,
+    //       },
+    //       this.msgWithOutSidCid
+    //     )
+    // : 'string' == t
+    // ? JSON.stringify(this)
+    // : this
+
+    return {}
   }
 
   /**
@@ -53,15 +61,19 @@ export class CCLinkDataProcessing {
    * cclink.js:2082 dumps()
    */
   dumps(): Uint8Array {
-    let msgPackEncodeBuffer = new Uint8Array(msgpack().encode(this.msgWithOutSidCid)),
-      msgPackEncodeBufferUint8Array = new Uint8Array(8 + msgPackEncodeBuffer.byteLength),
-      msgPackEncodeBufferUint8ArrayDataView = new DataView(msgPackEncodeBufferUint8Array.buffer)
-    msgPackEncodeBufferUint8ArrayDataView.setUint16(0, this.ccsid, true)
-    msgPackEncodeBufferUint8ArrayDataView.setUint16(2, this.cccid, true)
-    msgPackEncodeBuffer.forEach((t, n) => {
-      msgPackEncodeBufferUint8Array[8 + n] = t
+    let msgpackEncodeBufferList = msgpack().encode(this.msgWithOutSidCid),
+      msgpackEncodeUint8Array = new Uint8Array(msgpackEncodeBufferList),
+      dumpsUint8Array = new Uint8Array(8 + msgpackEncodeUint8Array.byteLength),
+      dumpsDataView = new DataView(dumpsUint8Array.buffer)
+
+    dumpsDataView.setUint16(0, this.ccsid, true)
+    dumpsDataView.setUint16(2, this.cccid, true)
+
+    msgpackEncodeUint8Array.forEach((t, n) => {
+      dumpsUint8Array[8 + n] = t
     })
-    return msgPackEncodeBufferUint8Array
+
+    return dumpsUint8Array
   }
 
   /**
@@ -70,10 +82,10 @@ export class CCLinkDataProcessing {
    * @param {Uint8Array} Uint8ArrayData 原始数据 Uint8Array
    */
   static unpack(Uint8ArrayData: Uint8Array) {
-    let n = new DataView(Uint8ArrayData.buffer),
-      ccsid = n.getUint16(0, true),
-      cccid = n.getUint16(2, true),
-      o = null
+    let n: DataView = new DataView(Uint8ArrayData.buffer),
+      ccsid: number = n.getUint16(0, true),
+      cccid: number = n.getUint16(2, true),
+      o: Uint8Array = new Uint8Array()
     if (n.getUint32(4, true)) {
       let s = n.getUint32(8, true),
         u = new Uint8Array(Uint8ArrayData.buffer, 12)
@@ -82,7 +94,7 @@ export class CCLinkDataProcessing {
       o = new Uint8Array(Uint8ArrayData.buffer, 8)
     }
 
-    let f = msgpack().decode(o)
+    let f: object = msgpack().decode(o)
     //console.info(f)
 
     return new CCLinkDataProcessing(
@@ -111,4 +123,7 @@ export class CCLinkDataProcessing {
   }
 }
 
-// module.exports = CCLinkDataProcessing
+export {
+  CCJsonData,
+  CCLinkDataProcessing,
+}

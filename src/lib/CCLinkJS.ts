@@ -1,11 +1,11 @@
 import WebSocket from 'websocket'
-import { CCLinkDataProcessing } from './CCLinkDataProcessing'
+import { CCLinkDataProcessing, CCJsonData } from './CCLinkDataProcessing'
 
 /**
  * CCLinkJS - Remake from cclink.js
  * @author hhui64<907322015@qq.com>
  */
-export class CCLinkJS {
+class CCLinkJS {
   WebSocket: {
     client: WebSocket.client
     server: WebSocket.server
@@ -24,7 +24,6 @@ export class CCLinkJS {
       server: new WebSocket.server(),
       socketConnection: null,
     }
-    // this._heartbeatInterval = null
     this._listenQueue = []
   }
 
@@ -72,6 +71,7 @@ export class CCLinkJS {
    * @param {String} desc
    */
   _onClose(code: string | number, desc: string) {
+    this.WebSocket.socketConnection = null
     console.info('连接关闭: ' + code + ' ' + desc)
   }
 
@@ -80,20 +80,22 @@ export class CCLinkJS {
    * @param {WebSocket.IMessage} data
    */
   _onMessage(data: WebSocket.IMessage) {
-    let Uint8ArrayData = new Uint8Array(data.binaryData),
-      unpackData = CCLinkDataProcessing.unpack(Uint8ArrayData).format('json')
+    if (data.binaryData?.byteLength) {
+      let Uint8ArrayData = new Uint8Array(data.binaryData),
+        unpackData = CCLinkDataProcessing.unpack(Uint8ArrayData).format('json')
 
-    if (unpackData.ccsid == 515) {
-      console.info('[接收]', unpackData)
+      if (unpackData.ccsid === 515) {
+        console.info('[接收]', unpackData)
+      }
     }
   }
 
   /**
    * 发送JSON数据
    * cclink.js:0 send(t)
-   * @param {Object} data JSON数据
+   * @param {CCJsonData} data JSON数据
    */
-  send(data: object) {
+  send(data: CCJsonData) {
     let Uint8ArrayData: Uint8Array = new CCLinkDataProcessing(data).dumps(),
       BufferData: Buffer = Buffer.from(Uint8ArrayData.buffer)
     this.WebSocket.socketConnection && this.WebSocket.socketConnection.sendBytes(BufferData)
@@ -124,4 +126,4 @@ export class CCLinkJS {
   }
 }
 
-// module.exports = CCLinkJS
+export { CCLinkJS }
