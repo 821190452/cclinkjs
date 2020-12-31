@@ -1,12 +1,26 @@
 import msgpack from 'msgpack5'
 import pako from 'pako'
 
+interface CCJsonData {
+  ccsid: number
+  cccid: number
+}
+
+interface CCJsonDataMsgWithOutSidCid {
+  ccsid?: number
+  cccid?: number
+}
+
+
 /**
  * cclink.js 数据处理类
  * @author hhui64<907322015@qq.com>
  */
-class CCLinkDataProcessing {
-  constructor(data) {
+export class CCLinkDataProcessing {
+  ccsid: number
+  cccid: number
+  msgWithOutSidCid: CCJsonDataMsgWithOutSidCid
+  constructor(data: CCJsonData) {
     this.ccsid = data.ccsid
     this.cccid = data.cccid
     this.msgWithOutSidCid = data
@@ -19,7 +33,7 @@ class CCLinkDataProcessing {
    * cclink.js:2074 format(t)
    * @param {String} t 数据类型: json/string
    */
-  format(t) {
+  format(t: object | string) {
     return 'json' == t
       ? Object.assign(
           {},
@@ -38,7 +52,7 @@ class CCLinkDataProcessing {
    * 编码数据
    * cclink.js:2082 dumps()
    */
-  dumps() {
+  dumps(): Uint8Array {
     let msgPackEncodeBuffer = new Uint8Array(msgpack().encode(this.msgWithOutSidCid)),
       msgPackEncodeBufferUint8Array = new Uint8Array(8 + msgPackEncodeBuffer.byteLength),
       msgPackEncodeBufferUint8ArrayDataView = new DataView(msgPackEncodeBufferUint8Array.buffer)
@@ -55,7 +69,7 @@ class CCLinkDataProcessing {
    * cclink.js:2094 unpack(e)
    * @param {Uint8Array} Uint8ArrayData 原始数据 Uint8Array
    */
-  static unpack(Uint8ArrayData) {
+  static unpack(Uint8ArrayData: Uint8Array) {
     let n = new DataView(Uint8ArrayData.buffer),
       ccsid = n.getUint16(0, true),
       cccid = n.getUint16(2, true),
@@ -69,6 +83,7 @@ class CCLinkDataProcessing {
     }
 
     let f = msgpack().decode(o)
+    //console.info(f)
 
     return new CCLinkDataProcessing(
       Object.assign(
@@ -87,7 +102,7 @@ class CCLinkDataProcessing {
    * cclink.js:2113 replaceLinkBreak(t)
    * @param {Object} t 原始数据对象
    */
-  static replaceLinkBreak(t) {
+  static replaceLinkBreak(t: object | string): object | string {
     return (
       'object' === (void 0 === t ? 'undefined' : typeof t) && (t = JSON.stringify(t)),
       (t = ('' + t).replace(/\\r\\n/g, '')),
@@ -96,4 +111,4 @@ class CCLinkDataProcessing {
   }
 }
 
-module.exports = CCLinkDataProcessing
+// module.exports = CCLinkDataProcessing

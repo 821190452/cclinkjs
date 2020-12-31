@@ -1,12 +1,20 @@
 import WebSocket from 'websocket'
-import CCLinkDataProcessing from './CCLinkDataProcessing'
+import { CCLinkDataProcessing } from './CCLinkDataProcessing'
 
 /**
  * CCLinkJS - Remake from cclink.js
  * @author hhui64<907322015@qq.com>
  */
-class CCLinkJS {
-  constructor(options) {
+export class CCLinkJS {
+  WebSocket: {
+    client: WebSocket.client
+    server: WebSocket.server
+    socketConnection: WebSocket.connection | null
+  }
+  cfg: { url: string; useWss: boolean }
+  private _heartbeatInterval: NodeJS.Timeout | null = null
+  private _listenQueue: Function[]
+  constructor(options?: object) {
     this.cfg = {
       url: '//weblink.cc.163.com/',
       useWss: true,
@@ -14,15 +22,9 @@ class CCLinkJS {
     this.WebSocket = {
       client: new WebSocket.client(),
       server: new WebSocket.server(),
-      /**
-       * @type {WebSocket.connection} WebSocket会话
-       */
       socketConnection: null,
     }
-    this._heartbeatInterval = null
-    /**
-     * @type {Function[]} 消息监听方法队列
-     */
+    // this._heartbeatInterval = null
     this._listenQueue = []
   }
 
@@ -51,7 +53,7 @@ class CCLinkJS {
    * 连接成功处理方法
    * @param {WebSocket.connection} connection
    */
-  _onConnect(connection) {
+  _onConnect(connection: WebSocket.connection | null) {
     this.WebSocket.socketConnection = connection
     console.info('连接成功')
   }
@@ -60,7 +62,7 @@ class CCLinkJS {
    * 连接错误处理方法
    * @param {Error} error
    */
-  _onError(error) {
+  _onError(error: Error) {
     console.info('连接错误: ' + error.toString())
   }
 
@@ -69,7 +71,7 @@ class CCLinkJS {
    * @param {Number} code
    * @param {String} desc
    */
-  _onClose(code, desc) {
+  _onClose(code: string | number, desc: string) {
     console.info('连接关闭: ' + code + ' ' + desc)
   }
 
@@ -77,11 +79,13 @@ class CCLinkJS {
    * 消息处理方法
    * @param {WebSocket.IMessage} data
    */
-  _onMessage(data) {
+  _onMessage(data: WebSocket.IMessage) {
     let Uint8ArrayData = new Uint8Array(data.binaryData),
       unpackData = CCLinkDataProcessing.unpack(Uint8ArrayData).format('json')
 
-    console.info('[接收]', unpackData)
+    if (unpackData.ccsid == 515) {
+      console.info('[接收]', unpackData)
+    }
   }
 
   /**
@@ -89,9 +93,11 @@ class CCLinkJS {
    * cclink.js:0 send(t)
    * @param {Object} data JSON数据
    */
-  send(data) {
-    let Uint8ArrayData = new CCLinkDataProcessing(data).dumps()
-    this.WebSocket.socketConnection && this.WebSocket.socketConnection.sendBytes(Buffer.from(Uint8ArrayData.buffer))
+  send(data: object) {
+    let Uint8ArrayData: Uint8Array = new CCLinkDataProcessing(data).dumps(),
+      BufferData: Buffer = Buffer.from(Uint8ArrayData.buffer)
+    this.WebSocket.socketConnection && this.WebSocket.socketConnection.sendBytes(BufferData)
+    console.info('[发送]', BufferData.length)
   }
 
   /**
@@ -107,15 +113,15 @@ class CCLinkJS {
         ccsid: 6144,
         cccid: 5,
       })
-    }, 5000)
+    }, 30000)
   }
 
   /**
    * 停止发送心跳包
    */
   _stopHeartBeat() {
-    clearInterval(this._heartbeatInterval)
+    this._heartbeatInterval && clearInterval(this._heartbeatInterval)
   }
 }
 
-module.exports = CCLinkJS
+// module.exports = CCLinkJS
