@@ -4,7 +4,7 @@ import pako from 'pako'
 interface CCJsonData {
   ccsid?: number
   cccid?: number
-  // [key: string | number]: any
+  [propName: string]: any
 }
 
 /**
@@ -81,7 +81,7 @@ class CCLinkDataProcessing {
    * cclink.js:2094 unpack(e)
    * @param {Uint8Array} Uint8ArrayData 原始数据 Uint8Array
    */
-  static unpack(Uint8ArrayData: Uint8Array) {
+  static unpack(Uint8ArrayData: Uint8Array): CCLinkDataProcessing {
     let n: DataView = new DataView(Uint8ArrayData.buffer),
       ccsid: number = n.getUint16(0, true),
       cccid: number = n.getUint16(2, true),
@@ -94,7 +94,7 @@ class CCLinkDataProcessing {
       o = new Uint8Array(Uint8ArrayData.buffer, 8)
     }
 
-    let f: object = msgpack().decode(o)
+    let f: object = msgpack().decode(Buffer.from(o))
     //console.info(f)
 
     return new CCLinkDataProcessing(
