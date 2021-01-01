@@ -1,13 +1,6 @@
 import WebSocket from 'websocket'
 import { CCLinkDataProcessing, CCJsonData } from './CCLinkDataProcessing'
 
-interface CCLinkJSOptions {
-  url?: string
-  usWss?: boolean
-  reconnectTimes?: number
-  heartbeatInterval?: number
-}
-
 /**
  * CCLinkJS - Remake from cclink.js
  * @author hhui64<907322015@qq.com>
@@ -21,7 +14,7 @@ class CCLinkJS {
   cfg: { url: string; useWss: boolean }
   private _heartbeatInterval: NodeJS.Timeout | null = null
   private _listenQueue: Function[]
-  constructor(options?: CCLinkJSOptions) {
+  constructor(options?: object) {
     this.cfg = {
       url: '//weblink.cc.163.com/',
       useWss: true,
@@ -37,17 +30,17 @@ class CCLinkJS {
   /**
    * 连接服务器
    */
-  connect(): void {
+  connect() {
     this.WebSocket.client.connect((this.cfg.useWss ? 'wss:' : 'ws:') + this.cfg.url)
-    this.WebSocket.client.on('connect', (connection: WebSocket.connection) => {
+    this.WebSocket.client.on('connect', (connection) => {
       this._onConnect(connection)
-      connection.on('error', (error: Error) => {
+      connection.on('error', (error) => {
         this._onError(error)
       })
-      connection.on('close', (code: number, desc: string) => {
+      connection.on('close', (code, desc) => {
         this._onClose(code, desc)
       })
-      connection.on('message', (data: WebSocket.IMessage) => {
+      connection.on('message', (data) => {
         if (data.type === 'binary') {
           this._onMessage(data)
         }
@@ -59,7 +52,7 @@ class CCLinkJS {
    * 连接成功处理方法
    * @param {WebSocket.connection} connection
    */
-  private _onConnect(connection: WebSocket.connection): void {
+  _onConnect(connection: WebSocket.connection | null) {
     this.WebSocket.socketConnection = connection
     console.info('连接成功')
   }
@@ -68,16 +61,16 @@ class CCLinkJS {
    * 连接错误处理方法
    * @param {Error} error
    */
-  private _onError(error: Error): void {
+  _onError(error: Error) {
     console.info('连接错误: ' + error.toString())
   }
 
   /**
    * 连接关闭处理方法
-   * @param {number} code
-   * @param {string} desc
+   * @param {Number} code
+   * @param {String} desc
    */
-  private _onClose(code: number, desc: string): void {
+  _onClose(code: string | number, desc: string) {
     this.WebSocket.socketConnection = null
     console.info('连接关闭: ' + code + ' ' + desc)
   }
@@ -86,7 +79,7 @@ class CCLinkJS {
    * 消息处理方法
    * @param {WebSocket.IMessage} data
    */
-  private _onMessage(data: WebSocket.IMessage): void {
+  _onMessage(data: WebSocket.IMessage) {
     if (data.binaryData?.byteLength) {
       let Uint8ArrayData = new Uint8Array(data.binaryData),
         unpackData = CCLinkDataProcessing.unpack(Uint8ArrayData).format('json')
@@ -102,7 +95,7 @@ class CCLinkJS {
    * cclink.js:0 send(t)
    * @param {CCJsonData} data JSON数据
    */
-  send(data: CCJsonData): void {
+  send(data: CCJsonData) {
     let Uint8ArrayData: Uint8Array = new CCLinkDataProcessing(data).dumps(),
       BufferData: Buffer = Buffer.from(Uint8ArrayData.buffer)
     this.WebSocket.socketConnection && this.WebSocket.socketConnection.sendBytes(BufferData)
