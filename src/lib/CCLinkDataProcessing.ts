@@ -123,7 +123,4 @@ class CCLinkDataProcessing {
   }
 }
 
-export {
-  CCJsonData,
-  CCLinkDataProcessing,
-}
+export { CCJsonData, CCLinkDataProcessing }
