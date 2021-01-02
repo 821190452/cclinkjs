@@ -61,6 +61,7 @@ class CCLinkJS {
    */
   private _onConnect(connection: WebSocket.connection): void {
     this.WebSocket.socketConnection = connection
+    this._startHeartBeat()
     console.info('连接成功')
   }
 
@@ -79,6 +80,7 @@ class CCLinkJS {
    */
   private _onClose(code: number, desc: string): void {
     this.WebSocket.socketConnection = null
+    this._stopHeartBeat()
     console.info('连接关闭: ' + code + ' ' + desc)
   }
 
@@ -90,10 +92,7 @@ class CCLinkJS {
     if (data.binaryData?.byteLength) {
       let Uint8ArrayData = new Uint8Array(data.binaryData),
         unpackData = CCLinkDataProcessing.unpack(Uint8ArrayData).format('json')
-
-      if (unpackData.ccsid === 515) {
-        console.info('[接收]', unpackData)
-      }
+      console.info('[接收]', unpackData)
     }
   }
 
@@ -111,9 +110,9 @@ class CCLinkJS {
 
   /**
    * @TODO 监听指定接口消息
-   * @param ccsid 
-   * @param cccid 
-   * @param options 
+   * @param ccsid
+   * @param cccid
+   * @param options
    */
   public listen(ccsid: number, cccid: number, options?: object): void {}
 
