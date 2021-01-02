@@ -7,14 +7,14 @@ script:
   - npm install
   - npm run build
 deploy:
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN
-  local_dir: dist
-  on:
-    branch: master
-  branches:
-    only:
-      - master
+skip_cleanup: true
+github_token: $GITHUB_TOKEN
+local_dir: dist
+on:
+  branch: master
+branches:
+  only:
+    - master
 after_script:
   - cd dist
   - cd -
