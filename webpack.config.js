@@ -2,20 +2,34 @@ const path = require('path')
 const packagejson = require('./package.json')
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/index.ts',
   mode: 'development',
   target: 'node',
   output: {
-    filename: `cclink-${packagejson.version}.js`,
+    filename: `cclink-${packagejson.version}.bundle.js`,
     path: path.resolve(__dirname, 'dist'),
   },
   node: {
-    console: true,
-    global: true,
-    process: true,
-    Buffer: true,
     __filename: true,
     __dirname: true,
-    setImmediate: true,
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: {
+          loader: 'babel-loader',
+        },
+        exclude: '/node_modules/',
+      },
+      {
+        test: /\.ts?$/,
+        use: 'ts-loader',
+        exclude: '/node_modules/',
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.ts', '.js'],
   },
 }
