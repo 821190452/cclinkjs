@@ -1,4 +1,4 @@
-# CCLinkJS Remake
+# CCLinkJS Remake ![Travis (.com) branch](https://img.shields.io/travis/com/hhui64/cclinkjs/master)
 
 CC 直播前端模块 cclink.js 反混淆项目，该模块主要负责与服务端的通信
 
@@ -10,6 +10,8 @@ npm install cclinkjs --save
 
 ## 使用
 
+引入并创建一个 CCLinkJS 对象
+
 ```javascript
 // CommonJS
 const CCLinkJS = require('cclinkjs')
@@ -20,10 +22,22 @@ const cclinkjs = new CCLinkJS()
 
 // 连接服务器
 cclinkjs.connect()
+console.log(cclinkjs.isReady) // true
+```
 
+向服务端发送数据
+
+```javascript
 // 发送数据
 cclinkjs.send({ ccsid: 6144, cccid: 5 })
 
+/**
+ * 如担心发送数据时恰巧碰到 connection 失效或尚在连接中
+ * 可以通过 options 设置 { cache: true } 来将消息暂时
+ * 放入缓存队列中，待 socket 连接成功时会自动将缓存队列
+ * 中尚未发送的消息重新发送。
+ */
+cclinkjs.send({ ccsid: 6144, cccid: 5 }, { cache: true })
 ```
 
 ## 声明
