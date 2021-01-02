@@ -37,7 +37,7 @@ class CCLinkJS {
   /**
    * 连接服务器
    */
-  connect(): void {
+  public connect(): void {
     this.WebSocket.client.connect((this.cfg.useWss ? 'wss:' : 'ws:') + this.cfg.url)
     this.WebSocket.client.on('connect', (connection: WebSocket.connection) => {
       this._onConnect(connection)
@@ -102,7 +102,7 @@ class CCLinkJS {
    * cclink.js:0 send(t)
    * @param {CCJsonData} data JSON数据
    */
-  send(data: CCJsonData): void {
+  public send(data: CCJsonData): void {
     let Uint8ArrayData: Uint8Array = new CCLinkDataProcessing(data).dumps(),
       BufferData: Buffer = Buffer.from(Uint8ArrayData.buffer)
     this.WebSocket.socketConnection && this.WebSocket.socketConnection.sendBytes(BufferData)
@@ -110,9 +110,17 @@ class CCLinkJS {
   }
 
   /**
+   * @TODO 监听指定接口消息
+   * @param ccsid 
+   * @param cccid 
+   * @param options 
+   */
+  public listen(ccsid: number, cccid: number, options?: object): void {}
+
+  /**
    * 开始发送心跳包
    */
-  _startHeartBeat() {
+  private _startHeartBeat(): void {
     this.send({
       ccsid: 6144,
       cccid: 5,
@@ -128,7 +136,7 @@ class CCLinkJS {
   /**
    * 停止发送心跳包
    */
-  _stopHeartBeat() {
+  private _stopHeartBeat(): void {
     this._heartbeatInterval && clearInterval(this._heartbeatInterval)
   }
 }
