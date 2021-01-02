@@ -37,7 +37,7 @@ class CCLinkJS {
   /**
    * 连接服务器
    */
-  connect(): void {
+  public connect(): void {
     this.WebSocket.client.connect((this.cfg.useWss ? 'wss:' : 'ws:') + this.cfg.url)
     this.WebSocket.client.on('connect', (connection: WebSocket.connection) => {
       this._onConnect(connection)
@@ -61,6 +61,7 @@ class CCLinkJS {
    */
   private _onConnect(connection: WebSocket.connection): void {
     this.WebSocket.socketConnection = connection
+    this._startHeartBeat()
     console.info('连接成功')
   }
 
@@ -79,6 +80,7 @@ class CCLinkJS {
    */
   private _onClose(code: number, desc: string): void {
     this.WebSocket.socketConnection = null
+    this._stopHeartBeat()
     console.info('连接关闭: ' + code + ' ' + desc)
   }
 
@@ -90,10 +92,7 @@ class CCLinkJS {
     if (data.binaryData?.byteLength) {
       let Uint8ArrayData = new Uint8Array(data.binaryData),
         unpackData = CCLinkDataProcessing.unpack(Uint8ArrayData).format('json')
-
-      if (unpackData.ccsid === 515) {
-        console.info('[接收]', unpackData)
-      }
+      console.info('[接收]', unpackData)
     }
   }
 
@@ -102,7 +101,7 @@ class CCLinkJS {
    * cclink.js:0 send(t)
    * @param {CCJsonData} data JSON数据
    */
-  send(data: CCJsonData): void {
+  public send(data: CCJsonData): void {
     let Uint8ArrayData: Uint8Array = new CCLinkDataProcessing(data).dumps(),
       BufferData: Buffer = Buffer.from(Uint8ArrayData.buffer)
     this.WebSocket.socketConnection && this.WebSocket.socketConnection.sendBytes(BufferData)
@@ -110,9 +109,17 @@ class CCLinkJS {
   }
 
   /**
+   * @TODO 监听指定接口消息
+   * @param ccsid
+   * @param cccid
+   * @param options
+   */
+  public listen(ccsid: number, cccid: number, options?: object): void {}
+
+  /**
    * 开始发送心跳包
    */
-  _startHeartBeat() {
+  private _startHeartBeat(): void {
     this.send({
       ccsid: 6144,
       cccid: 5,
@@ -128,7 +135,7 @@ class CCLinkJS {
   /**
    * 停止发送心跳包
    */
-  _stopHeartBeat() {
+  private _stopHeartBeat(): void {
     this._heartbeatInterval && clearInterval(this._heartbeatInterval)
   }
 }

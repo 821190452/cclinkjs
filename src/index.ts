@@ -5,9 +5,10 @@ import moment from 'moment'
 const cclinkjs = new CCLinkJS()
 
 cclinkjs.connect()
-setTimeout(() => {
-  cclinkjs._startHeartBeat()
-}, 3000)
+
+// setTimeout(() => {
+//   cclinkjs._startHeartBeat()
+// }, 3000)
 
 setTimeout(() => {
   cclinkjs.send({

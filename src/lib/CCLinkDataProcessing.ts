@@ -28,7 +28,7 @@ class CCLinkDataProcessing {
    * cclink.js:2074 format(t)
    * @param {string} type 格式化类型
    */
-  format(type: string): CCJsonData {
+  public format(type: string): CCJsonData {
     if (type === 'json') {
       return Object.assign(
         {},
@@ -60,7 +60,7 @@ class CCLinkDataProcessing {
    * 编码数据
    * cclink.js:2082 dumps()
    */
-  dumps(): Uint8Array {
+  public dumps(): Uint8Array {
     let msgpackEncodeBufferList = msgpack().encode(this.msgWithOutSidCid),
       msgpackEncodeUint8Array = new Uint8Array(msgpackEncodeBufferList),
       dumpsUint8Array = new Uint8Array(8 + msgpackEncodeUint8Array.byteLength),
@@ -81,7 +81,7 @@ class CCLinkDataProcessing {
    * cclink.js:2094 unpack(e)
    * @param {Uint8Array} Uint8ArrayData 原始数据 Uint8Array
    */
-  static unpack(Uint8ArrayData: Uint8Array): CCLinkDataProcessing {
+  public static unpack(Uint8ArrayData: Uint8Array): CCLinkDataProcessing {
     let n: DataView = new DataView(Uint8ArrayData.buffer),
       ccsid: number = n.getUint16(0, true),
       cccid: number = n.getUint16(2, true),
@@ -95,7 +95,6 @@ class CCLinkDataProcessing {
     }
 
     let f: object = msgpack().decode(Buffer.from(o))
-    //console.info(f)
 
     return new CCLinkDataProcessing(
       Object.assign(
@@ -114,7 +113,7 @@ class CCLinkDataProcessing {
    * cclink.js:2113 replaceLinkBreak(t)
    * @param {Object} t 原始数据对象
    */
-  static replaceLinkBreak(t: object | string): object | string {
+  public static replaceLinkBreak(t: object | string): object | string {
     return (
       'object' === (void 0 === t ? 'undefined' : typeof t) && (t = JSON.stringify(t)),
       (t = ('' + t).replace(/\\r\\n/g, '')),
