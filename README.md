@@ -1,4 +1,4 @@
-# CCLinkJS Remake ![Travis (.com) branch](https://img.shields.io/travis/com/hhui64/cclinkjs/master)
+# CCLinkJS Remake [![Build Status](https://www.travis-ci.com/hhui64/cclinkjs.svg?branch=master)](https://www.travis-ci.com/hhui64/cclinkjs) ![GitHub](https://img.shields.io/github/license/hhui64/cclinkjs) ![GitHub](https://img.shields.io/github/languages/top/hhui64/cclinkjs)
 
 CC 直播前端模块 cclink.js 反混淆项目，该模块主要负责与服务端的通信
 
