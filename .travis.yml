@@ -5,6 +5,7 @@ cache:
   npm: false
 script:
   - npm install
+  - npm run test
   - npm run build
 deploy:
 skip_cleanup: true
