@@ -114,6 +114,6 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
-# my config
+# project config
 dist/
-test/test.js
+package-lock.json
